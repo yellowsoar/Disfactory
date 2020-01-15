@@ -178,7 +178,8 @@ if IMGUR_CLIENT_ID is None:
     )
 
 CORS_ORIGIN_WHITELIST = [
-    "https://dev.disfactory.tw",
+    "http://disfactory.tw",
+    "https://disfactory.tw",
 ]
 
 TAIWAN_MAX_LATITUDE = 25.298401
