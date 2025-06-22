@@ -112,8 +112,6 @@ generate_template() {
     local suffix=$(get_service_suffix)
     local temp_template="$PROJECT_ROOT/temp-zeabur-pr-${PR_NUMBER}.yaml"
     
-    log_info "Generating template with suffix: $suffix"
-    
     # Start with the original template
     cp "$TEMPLATE_FILE" "$temp_template"
     
@@ -133,11 +131,11 @@ generate_template() {
     
     # Update image tags with commit-specific versions
     local image_tag="sha-${COMMIT_SHA}"
-    log_info "Updating image tags to: $image_tag"
     
     # Update backend-caddy image (service index 1)
     yq eval -i ".spec.services[1].spec.source.image = \"ghcr.io/disfactory/disfactory/backend-caddy:$image_tag\"" "$temp_template"
     
+    # Return only the template path, no logging
     echo "$temp_template"
 }
 
@@ -145,11 +143,21 @@ generate_template() {
 deploy_review_app() {
     log_info "Deploying review app for PR #${PR_NUMBER} (commit: ${COMMIT_SHA})"
     
+    local suffix=$(get_service_suffix)
+    log_info "Generating template with suffix: $suffix"
+    
     local template_file=$(generate_template)
     local domain_name=$(get_domain_name)
     
     log_info "Generated template: $template_file"
     log_info "Domain name: $domain_name"
+    log_info "Updating image tags to: sha-${COMMIT_SHA}"
+    
+    # Verify template file exists
+    if [ ! -f "$template_file" ]; then
+        log_error "Template file was not created: $template_file"
+        exit 1
+    fi
     
     # Read and escape template content
     local template_content
