@@ -72,8 +72,8 @@ validate_env() {
         COMMIT_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
     fi
     
-    # Truncate commit hash to 8 characters for consistency
-    COMMIT_SHA="${COMMIT_SHA:0:8}"
+    # Truncate commit hash to 7 characters for consistency with image tags
+    COMMIT_SHA="${COMMIT_SHA:0:7}"
 }
 
 # Make GraphQL API request
