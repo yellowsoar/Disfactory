@@ -19,18 +19,11 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 API_URL="https://api.zeabur.com/graphql"
 TEMPLATE_FILE="$PROJECT_ROOT/zeabur.yaml"
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
 # Logging functions
-log_info() { echo -e "${BLUE}ℹ️  $1${NC}"; }
-log_success() { echo -e "${GREEN}✅ $1${NC}"; }
-log_warning() { echo -e "${YELLOW}⚠️  $1${NC}"; }
-log_error() { echo -e "${RED}❌ $1${NC}"; }
+log_info() { echo "ℹ️  $1"; }
+log_success() { echo "✅ $1"; }
+log_warning() { echo "⚠️  $1"; }
+log_error() { echo "❌ $1"; }
 
 # Check required tools
 check_dependencies() {
