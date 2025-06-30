@@ -120,8 +120,16 @@ jobs:
             const commitSha = '${{ github.event.inputs.commit_sha }}';
 
             // Get outputs from previous step
-            const reviewAppUrl = '${{ steps.manual-action.outputs.review-app-url }}' || 'Unknown';
-            const projectName = '${{ steps.manual-action.outputs.review-app-project-name }}' || 'Unknown';
+            const reviewAppUrl = '${{ steps.manual-action.outputs.review-app-url }}';
+            const projectName = '${{ steps.manual-action.outputs.review-app-project-name }}';
+
+            // Debug logging
+            console.log('Debug - Raw reviewAppUrl:', JSON.stringify(reviewAppUrl));
+            console.log('Debug - Raw projectName:', JSON.stringify(projectName));
+
+            // Use fallback if empty
+            const finalUrl = reviewAppUrl || 'Unknown';
+            const finalProject = projectName || 'Unknown';
             const shortCommit = commitSha ? commitSha.substring(0, 8) : 'unknown';
 
             try {
@@ -141,8 +149,8 @@ jobs:
 
               Your review app has been deployed to Zeabur with commit-level isolation!
 
-              **🔗 Review App URL:** ${reviewAppUrl}
-              **📋 Project:** ${projectName}
+              **🔗 Review App URL:** ${finalUrl}
+              **📋 Project:** ${finalProject}
               **💻 Commit:** \`${shortCommit}\` ([${shortCommit}](https://github.com/${context.repo.owner}/${context.repo.repo}/commit/${commitSha}))
               **🌍 Region:** Zeabur Cloud
               **🔨 Triggered by:** Backend image build completion

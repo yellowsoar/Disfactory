@@ -163,8 +163,12 @@ jobs:
                 comment.body.includes('🚀 Review App Deployed')
               );
 
-              const reviewAppUrl = '${{ steps.deploy.outputs.review-app-url }}' || 'Unknown';
-              const projectName = '${{ steps.deploy.outputs.review-app-project-name }}' || 'Unknown';
+              const reviewAppUrl = '${{ steps.deploy.outputs.review-app-url }}';
+              const projectName = '${{ steps.deploy.outputs.review-app-project-name }}';
+
+              // Use fallback if empty
+              const finalUrl = reviewAppUrl || 'Unknown';
+              const finalProject = projectName || 'Unknown';
               const shortCommit = commitSha ? commitSha.substring(0, 8) : 'unknown';
 
               const triggerText = triggerType === 'automatic'
@@ -175,8 +179,8 @@ jobs:
 
               Your review app has been deployed to Zeabur with commit-level isolation!
 
-              **🔗 Review App URL:** ${reviewAppUrl}
-              **📋 Project:** ${projectName}
+              **🔗 Review App URL:** ${finalUrl}
+              **📋 Project:** ${finalProject}
               **💻 Commit:** \`${shortCommit}\` ([${shortCommit}](https://github.com/${context.repo.owner}/${context.repo.repo}/commit/${commitSha}))
               **🌍 Region:** Zeabur Cloud
               **🔨 Triggered by:** ${triggerText}
