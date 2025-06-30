@@ -108,44 +108,42 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install yq
-        run: |
-          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
-          sudo chmod +x /usr/local/bin/yq
-
       - name: Set deployment variables
         id: vars
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_ENV
-            echo "COMMIT_SHA=${{ needs.build-and-push.outputs.commit-sha }}" >> $GITHUB_ENV
-            echo "TRIGGER_TYPE=automatic" >> $GITHUB_ENV
+            echo "PR_NUMBER=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+            echo "COMMIT_SHA=${{ needs.build-and-push.outputs.commit-sha }}" >> $GITHUB_OUTPUT
+            echo "TRIGGER_TYPE=automatic" >> $GITHUB_OUTPUT
           else
-            echo "PR_NUMBER=${{ github.event.inputs.pr_number }}" >> $GITHUB_ENV
-            echo "COMMIT_SHA=${{ github.event.inputs.commit_sha || needs.build-and-push.outputs.commit-sha }}" >> $GITHUB_ENV
-            echo "TRIGGER_TYPE=manual" >> $GITHUB_ENV
+            echo "PR_NUMBER=${{ github.event.inputs.pr_number }}" >> $GITHUB_OUTPUT
+            echo "COMMIT_SHA=${{ github.event.inputs.commit_sha || needs.build-and-push.outputs.commit-sha }}" >> $GITHUB_OUTPUT
+            echo "TRIGGER_TYPE=manual" >> $GITHUB_OUTPUT
           fi
 
       - name: Deploy review app
-        env:
-          ZEABUR_API_KEY: ${{ secrets.ZEABUR_API_KEY }}
-          ZEABUR_PROJECT_ID: ${{ secrets.ZEABUR_PROJECT_ID || vars.ZEABUR_PROJECT_ID }}
-        run: |
-          echo "🚀 Deploying review app for PR #${PR_NUMBER}"
-          echo "📝 Commit: ${COMMIT_SHA}"
-          echo "🔧 Trigger: ${TRIGGER_TYPE}"
-          
-          # Run the deployment script
-          ./scripts/zeabur-review-app.sh deploy
+        id: deploy
+        uses: ./zeabur-review-app-action
+        with:
+          action: deploy
+          zeabur-api-key: ${{ secrets.ZEABUR_API_KEY }}
+          zeabur-project-id: ${{ secrets.ZEABUR_PROJECT_ID || vars.ZEABUR_PROJECT_ID }}
+          pr-number: ${{ steps.vars.outputs.PR_NUMBER }}
+          commit-sha: ${{ steps.vars.outputs.COMMIT_SHA }}
+          project-name: "Disfactory"
+          ignored-services: "Disfactory Worker"
+          cleanup-services: "PostgreSQL"
+          update-image-services: "Disfactory Backend"
+          domain-prefix: "disfactory"
 
       - name: Comment on PR
-        if: env.PR_NUMBER != ''
+        if: steps.vars.outputs.PR_NUMBER != ''
         uses: actions/github-script@v7
         with:
           script: |
-            const prNumber = process.env.PR_NUMBER;
-            const commitSha = process.env.COMMIT_SHA;
-            const triggerType = process.env.TRIGGER_TYPE;
+            const prNumber = '${{ steps.vars.outputs.PR_NUMBER }}';
+            const commitSha = '${{ steps.vars.outputs.COMMIT_SHA }}';
+            const triggerType = '${{ steps.vars.outputs.TRIGGER_TYPE }}';
             
             if (!prNumber) {
               console.log('⚠️ No PR number provided, skipping comment');
@@ -165,8 +163,8 @@ jobs:
                 comment.body.includes('🚀 Review App Deployed')
               );
               
-              const reviewAppUrl = process.env.REVIEW_APP_URL || 'Unknown';
-              const projectName = process.env.REVIEW_APP_PROJECT_NAME || 'Unknown';
+              const reviewAppUrl = '${{ steps.deploy.outputs.review-app-url }}' || 'Unknown';
+              const projectName = '${{ steps.deploy.outputs.review-app-project-name }}' || 'Unknown';
               const shortCommit = commitSha ? commitSha.substring(0, 8) : 'unknown';
               
               const triggerText = triggerType === 'automatic' 
@@ -219,9 +217,9 @@ jobs:
       - name: Output results
         run: |
           echo "🎉 Review app deployment completed!"
-          if [ -n "$REVIEW_APP_URL" ]; then
-            echo "🔗 Review App URL: $REVIEW_APP_URL"
+          if [ -n "${{ steps.deploy.outputs.review-app-url }}" ]; then
+            echo "🔗 Review App URL: ${{ steps.deploy.outputs.review-app-url }}"
           fi
-          if [ -n "$REVIEW_APP_PROJECT_NAME" ]; then
-            echo "📋 Project Name: $REVIEW_APP_PROJECT_NAME"
+          if [ -n "${{ steps.deploy.outputs.review-app-project-name }}" ]; then
+            echo "📋 Project Name: ${{ steps.deploy.outputs.review-app-project-name }}"
           fi
