@@ -123,7 +123,7 @@ jobs:
 
       - name: Deploy review app
         id: deploy
-        uses: ./zeabur-review-app-action
+        uses: Yukaii/zeabur-review-app-action@main
         with:
           action: deploy
           zeabur-api-key: ${{ secrets.ZEABUR_API_KEY }}

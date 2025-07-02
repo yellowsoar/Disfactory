@@ -39,7 +39,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Cleanup review app services
-        uses: ./zeabur-review-app-action
+        uses: Yukaii/zeabur-review-app-action@main
         with:
           action: cleanup
           zeabur-api-key: ${{ secrets.ZEABUR_API_KEY }}
@@ -89,7 +89,7 @@ jobs:
 
       - name: Execute manual action
         id: manual-action
-        uses: ./zeabur-review-app-action
+        uses: Yukaii/zeabur-review-app-action@main
         with:
           action: ${{ github.event.inputs.action }}
           zeabur-api-key: ${{ secrets.ZEABUR_API_KEY }}
