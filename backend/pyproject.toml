@@ -1,3 +1,37 @@
+[project]
+name = "disfactory"
+version = "1.2.1"
+description = ""
+authors = []
+requires-python = ">=3.7.2,<4"
+dependencies = [
+    "django-admin-rangefilter>=0.6.2,<0.7",
+    "django-cors-headers>=3.5.0,<4",
+    "django-import-export>=2.4.0,<3",
+    "django-q==1.0.2",
+    "django==2.2.27",
+    "djangorestframework==3.11.2",
+    "docxcompose>=1.2.0,<2",
+    "drf-yasg>=1.17.1,<2",
+    "gunicorn>=20.0.4,<21",
+    "pillow>=9.0.1,<10",
+    "psycopg2-binary==2.8.6",
+    "pytest-dotenv>=0.5.2,<0.6",
+    "python-docx>=0.8.10,<0.9",
+    "python-dotenv>=0.14.0,<0.15",
+    "requests>=2.25.0,<3",
+]
+
+[dependency-groups]
+dev = [
+    "black>=22.8.0,<23",
+    "flake8>=5.0.4,<6",
+    "freezegun>=1.2.2,<2",
+    "pylint-django>=2.5.3,<3",
+    "pylint>=2.15.2,<3",
+    "pytest-django>=4.5.2,<5",
+]
+
 [tool.black]
 line-length = 99
 target-version = ['py39']
@@ -11,35 +45,3 @@ exclude = '''
   | migrations
 )
 '''
-
-[tool.poetry]
-name = "disfactory"
-version = "0.0.0"
-description = ""
-authors = []
-
-[tool.poetry.dependencies]
-python = "^3.7.2"
-django = "2.2.27"
-psycopg2-binary = "2.8.6"
-djangorestframework = "3.11.2"
-python-dotenv = "^0.14.0"
-requests = "^2.25.0"
-pillow = "^9.0.1"
-django-cors-headers = "^3.5.0"
-gunicorn = "^20.0.4"
-django-admin-rangefilter = "^0.6.2"
-drf-yasg = "^1.17.1"
-python-docx = "^0.8.10"
-docxcompose = "^1.2.0"
-django-q = "1.0.2"
-django-import-export = "^2.4.0"
-pytest-dotenv = "^0.5.2"
-
-[tool.poetry.group.dev.dependencies]
-black = "^22.8.0"
-freezegun = "^1.2.2"
-pylint = "^2.15.2"
-pylint-django = "^2.5.3"
-flake8 = "^5.0.4"
-pytest-django = "^4.5.2"
